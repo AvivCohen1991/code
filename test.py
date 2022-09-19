@@ -15,11 +15,11 @@ def define_args():
     args.cross_validation = False
 
     # data args
-    args.max_traj_len = 3
+    args.max_traj_len = 8
 
     # attack args
     args.attack = 'pgd'  # the optimizer
-    args.attack_k = 2  # epochs num
+    args.attack_k = 10  # epochs num
     args.attack_t_crit = 'mean_partial_rms'  # train loss
     args.attack_rot_crit = 'quat_product'  # rotation criterion
     args.attack_flow_crit = 'mse'  # flow criterion
@@ -35,7 +35,7 @@ def define_args():
 if __name__ == '__main__':
     for i in range(5):
         args = define_args()
-        
+
         args.attack_rot_factor = 1 - i / 4
         print(f'__________________________________rot factor: {args.attack_rot_factor}________________________________')
         args.run_name = f'rotFactor{args.attack_rot_factor}'
