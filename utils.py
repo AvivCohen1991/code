@@ -180,16 +180,6 @@ def compute_VO_args(args):
     print("initializing RMS test criterion")
     args.rms_crit = VOCriterion(t_crit='rms', rot_crit='none', flow_crit='none', target_t_crit='none',
                                 t_factor=1.0, rot_factor=0, flow_factor=0, target_t_factor=0)
-    # print("initializing mean partial RMS test criterion")
-    # args.mean_partial_rms_crit = VOCriterion(t_crit="mean_partial_rms")
-    # print("initializing targeted RMS test criterion")
-    # args.target_rms_crit = VOCriterion(target_t_crit="patch", t_factor=0)
-    # print("initializing targeted mean partial RMS test criterion")
-    # args.target_mean_partial_rms_crit = VOCriterion(t_crit="mean_partial_rms", target_t_crit="patch", t_factor=0)
-    # args.criterions = [args.rms_crit, args.mean_partial_rms_crit,
-    #                    args.target_rms_crit, args.target_mean_partial_rms_crit]
-    # args.criterions_names = ["rms_crit", "mean_partial_rms_crit",
-    #                          "target_rms_crit", "target_mean_partial_rms_crit"]
 
     args.criterions = [args.rms_crit]
     args.criterions_names = ["rms_crit"]
@@ -204,14 +194,6 @@ def compute_VO_args(args):
 
 
 def compute_attack_args(args):
-    # if args.attack_eval_mean_partial_rms:
-    #     print("attack evaluation criterion is mean partial RMS test criterion")
-    #     args.att_eval_criterion = args.mean_partial_rms_crit
-    #     args.attack_eval_str = "mean_partial_rms"
-    # else:
-    #     print("attack evaluation criterion is RMS test criterion")
-    #     args.att_eval_criterion = args.rms_crit
-    #     args.attack_eval_str = "rms"
     print("attack evaluation criterion is RMS test criterion")
     args.att_eval_criterion = args.rms_crit
     args.attack_eval_str = "rms"
