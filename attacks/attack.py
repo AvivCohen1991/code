@@ -438,5 +438,5 @@ class Attack:
         return pert
 
     def perturb(self, data_loader, y_list, eps, targeted=False, device=None, eval_data_loader=None, eval_y_list=None,
-                test_data_loader=None, test_y_list=None):
+                test_data_loader=None, test_y_list=None, early_stopping=0):
         raise NotImplementedError('perturb method not defined!')

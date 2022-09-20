@@ -139,7 +139,7 @@ class APGD(Attack):
         return grad.to(device)
 
     def perturb(self, data_loader, y_list, eps, targeted=False, device=None, eval_data_loader=None, eval_y_list=None,
-                test_data_loader=None, test_y_list=None):
+                test_data_loader=None, test_y_list=None, early_stopping=0):
 
         a_abs = np.abs(eps / self.n_iter) if self.alpha is None else np.abs(self.alpha)
         multiplier = -1 if targeted else 1
@@ -153,7 +153,7 @@ class APGD(Attack):
         data_shape, dtype, eval_data_loader, eval_y_list, clean_flow_list, \
         eval_clean_loss_list, traj_clean_loss_mean_list, clean_loss_sum, \
         best_pert, best_loss_list, best_loss_sum, all_loss, all_best_loss = \
-            self.compute_clean_baseline(data_loader, y_list, test_data_loader, test_y_list, device=device)
+            self.compute_clean_baseline(data_loader, y_list, eval_data_loader, eval_y_list, device=device)
 
         all_test_loss = all_loss[:]
 
@@ -173,6 +173,8 @@ class APGD(Attack):
                 print(" perturbation initialized to zero")
 
             pert = self.project(pert, eps)
+
+            iterations_without_improvement = 0
 
             for k in tqdm(range(self.n_iter)):
                 print(" attack optimization epoch: " + str(k))
@@ -194,13 +196,16 @@ class APGD(Attack):
                     test_loss_list = all_test_loss[-1][:]
 
                     if eval_loss_tot > best_loss_sum:
+                        iterations_without_improvement = 0
                         best_pert = pert.clone().detach()
                         best_loss_list = eval_loss_list
                         best_loss_sum = eval_loss_tot
 
-                        _, test_loss_list = self.attack_eval(pert, data_shape, test_data_loader,
-                                                             test_y_list,
-                                                             device)
+                        test_loss_tot, test_loss_list = self.attack_eval(pert, data_shape, test_data_loader,
+                                                                         test_y_list,
+                                                                         device)
+                    else:
+                        iterations_without_improvement += 1
 
                     all_loss.append(eval_loss_list)
                     all_test_loss.append(test_loss_list)
@@ -225,6 +230,9 @@ class APGD(Attack):
                     del eval_loss_tot
                     del eval_loss_list
                     torch.cuda.empty_cache()
+
+                    if 0 < early_stopping <= iterations_without_improvement:
+                        break
 
             opt_runtime = time.time() - opt_start_time
             print("optimization restart finished, optimization runtime: " + str(opt_runtime))

@@ -74,6 +74,7 @@ def parse_args():
     parser.add_argument('--alpha', type=float, default=0.05)
     parser.add_argument('--eps', type=float, default=1)
     parser.add_argument('--my_loss', action='store_true', default=False, help='to use my_loss?') # mine
+    parser.add_argument('--early_stopping', type=int, default=0, help='early stopping')  # mine
     # parser.add_argument('--attack_targeted', action='store_true', default=False, help='use targeted attacks')
     parser.add_argument('--attack_eval_mean_partial_rms', action='store_true', default=False, help='use mean partial rms criterion for attack evaluation criterion (default: False)')
     parser.add_argument('--attack_t_crit', default="none", type=str, metavar='ATTTC', help='translation criterion type for optimizing the attack (default: RMS between poses)')

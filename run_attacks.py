@@ -736,49 +736,6 @@ def test_clean(args):
     return run_attacks_train(args)
 
 
-def report_mean_results(folds_frames_clean_crit_means, folds_frames_clean_crit_stds,
-                        folds_frames_adv_crit_means, folds_frames_adv_crit_stds,
-                        folds_frames_delta_crit_means, folds_frames_delta_crit_stds,
-                        folds_frames_ratio_crit_means, folds_frames_ratio_crit_stds,
-                        folds_frames_delta_ratio_crit_means, folds_frames_delta_ratio_crit_stds,
-                        crit_str, final_report=True):
-    folds_frames_clean_crit_mean = [np.mean(rms_list) for rms_list in folds_frames_clean_crit_means]
-    folds_frames_clean_crit_std = [np.mean(rms_list) for rms_list in folds_frames_clean_crit_stds]
-    folds_frames_adv_crit_mean = [np.mean(rms_list) for rms_list in folds_frames_adv_crit_means]
-    folds_frames_adv_crit_std = [np.mean(rms_list) for rms_list in folds_frames_adv_crit_stds]
-    folds_frames_delta_crit_mean = [np.mean(rms_list) for rms_list in folds_frames_delta_crit_means]
-    folds_frames_delta_crit_std = [np.mean(rms_list) for rms_list in folds_frames_delta_crit_stds]
-    folds_frames_ratio_crit_mean = [np.mean(rms_list) for rms_list in folds_frames_ratio_crit_means]
-    folds_frames_ratio_crit_std = [np.mean(rms_list) for rms_list in folds_frames_ratio_crit_stds]
-    folds_frames_delta_ratio_crit_mean = [np.mean(rms_list) for rms_list in
-                                          folds_frames_delta_ratio_crit_means]
-    folds_frames_delta_ratio_crit_std = [np.mean(rms_list) for rms_list in folds_frames_delta_ratio_crit_stds]
-
-    folds_tested_str = str(len(folds_frames_clean_crit_means[0]))
-    if final_report:
-        folds_tested_str = "all (" + folds_tested_str + ")"
-    print("folds_frames_clean_" + crit_str + "_mean over " + folds_tested_str + " train-test splits:")
-    print(folds_frames_clean_crit_mean)
-    print("folds_frames_clean_" + crit_str + "_std over " + folds_tested_str + " train-test splits:")
-    print(folds_frames_clean_crit_std)
-    print("folds_frames_adv_" + crit_str + "_mean over " + folds_tested_str + " train-test splits:")
-    print(folds_frames_adv_crit_mean)
-    print("folds_frames_adv_" + crit_str + "_std over " + folds_tested_str + " train-test splits:")
-    print(folds_frames_adv_crit_std)
-    print("folds_frames_delta_" + crit_str + "_mean over " + folds_tested_str + " train-test splits:")
-    print(folds_frames_delta_crit_mean)
-    print("folds_frames_delta_" + crit_str + "_std over " + folds_tested_str + " train-test splits:")
-    print(folds_frames_delta_crit_std)
-    print("folds_frames_ratio_" + crit_str + "_mean over " + folds_tested_str + " train-test splits:")
-    print(folds_frames_ratio_crit_mean)
-    print("folds_frames_ratio_" + crit_str + "_std over " + folds_tested_str + " train-test splits:")
-    print(folds_frames_ratio_crit_std)
-    print("folds_frames_delta_ratio_" + crit_str + "_mean over " + folds_tested_str + " train-test splits:")
-    print(folds_frames_delta_ratio_crit_mean)
-    print("folds_frames_delta_ratio_" + crit_str + "_std over " + folds_tested_str + " train-test splits:")
-    print(folds_frames_delta_ratio_crit_std)
-
-
 def adv_oos_test_perturb_trajectories(args, train_traj_names, eval_traj_names, test_traj_names,
                                       attack, train_dataloader, motions_target_train_list,
                                       eval_dataloader, motions_target_eval_list,
@@ -797,7 +754,8 @@ def adv_oos_test_perturb_trajectories(args, train_traj_names, eval_traj_names, t
     best_pert, eval_clean_loss_list, eval_all_loss_list, eval_all_best_loss_list, test_all_loss_list = \
         attack.perturb(train_dataloader, motions_target_train_list, eps=args.eps, device=args.device,
                        eval_data_loader=eval_dataloader, eval_y_list=motions_target_eval_list,
-                       test_data_loader=test_dataloader, test_y_list=motions_target_test_list)
+                       test_data_loader=test_dataloader, test_y_list=motions_target_test_list,
+                       early_stopping=args.early_stopping)
 
     if args.save_best_pert:
         save_image(best_pert[0], adv_best_pert_dir + '/' + 'adv_best_pert.png')
@@ -954,36 +912,6 @@ def masked_list(lst, indices):
 def collect_columns(src_list, target_list):
     for idx, val in enumerate(src_list):
         target_list[idx].append(val)
-
-
-def collect_and_report_folds_mean_result(folds_frames_clean_crit_means, folds_frames_clean_crit_stds,
-                                         folds_frames_adv_crit_means, folds_frames_adv_crit_stds,
-                                         folds_frames_delta_crit_means, folds_frames_delta_crit_stds,
-                                         folds_frames_ratio_crit_means, folds_frames_ratio_crit_stds,
-                                         folds_frames_delta_ratio_crit_means, folds_frames_delta_ratio_crit_stds,
-                                         frames_clean_crit_mean, frames_clean_crit_std,
-                                         frames_adv_crit_mean, frames_adv_crit_std,
-                                         frames_delta_crit_mean, frames_delta_crit_std,
-                                         frames_ratio_crit_mean, frames_ratio_crit_std,
-                                         frames_delta_ratio_crit_mean, frames_delta_ratio_crit_std,
-                                         crit_str):
-    collect_columns(frames_clean_crit_mean, folds_frames_clean_crit_means)
-    collect_columns(frames_clean_crit_std, folds_frames_clean_crit_stds)
-    collect_columns(frames_adv_crit_mean, folds_frames_adv_crit_means)
-    collect_columns(frames_adv_crit_std, folds_frames_adv_crit_stds)
-    collect_columns(frames_delta_crit_mean, folds_frames_delta_crit_means)
-    collect_columns(frames_delta_crit_std, folds_frames_delta_crit_stds)
-    collect_columns(frames_ratio_crit_mean, folds_frames_ratio_crit_means)
-    collect_columns(frames_ratio_crit_std, folds_frames_ratio_crit_stds)
-    collect_columns(frames_delta_ratio_crit_mean, folds_frames_delta_ratio_crit_means)
-    collect_columns(frames_delta_ratio_crit_std, folds_frames_delta_ratio_crit_stds)
-
-    report_mean_results(folds_frames_clean_crit_means, folds_frames_clean_crit_stds,
-                        folds_frames_adv_crit_means, folds_frames_adv_crit_stds,
-                        folds_frames_delta_crit_means, folds_frames_delta_crit_stds,
-                        folds_frames_ratio_crit_means, folds_frames_ratio_crit_stds,
-                        folds_frames_delta_ratio_crit_means, folds_frames_delta_ratio_crit_stds,
-                        crit_str, final_report=False)
 
 
 def run_attacks_out_of_sample_test(args):
