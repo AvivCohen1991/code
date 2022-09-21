@@ -655,9 +655,6 @@ def run_attacks_train(args):
 
     # _________________________________________compute clean_________________________________________
 
-    # traj_clean_criterions_list is the clean loss for every criterion.
-    # motions_gt_list is the real motions that predicted by the vo.
-    # traj_clean_motions is the clean motions
     dataset_idx_list, dataset_name_list, traj_name_list, traj_indices, \
     motions_gt_list, traj_clean_criterions_list, traj_clean_motions = \
         test_clean_multi_inputs(args)
@@ -665,19 +662,12 @@ def run_attacks_train(args):
     print("traj_name_list")
     print(traj_name_list)
 
-    # motions_target_list is the real motions that predicted by the vo.
     motions_target_list = motions_gt_list
-    # traj_clean_rms_list, traj_clean_mean_partial_rms_list, \
-    # traj_clean_target_rms_list, traj_clean_target_mean_partial_rms_list = tuple(traj_clean_criterions_list)
 
     traj_clean_rms_list = traj_clean_criterions_list[0]
 
     # ____________________________________________train___________________________________________
 
-    # best_pert is one row (I don't know why) with only one element of the best pert image
-    # clean_loss_list is ???
-    # all_loss_list is
-    # all_best_loss_list is all the losses of every frame of every trajectory of every epoch
     best_pert, clean_loss_list, all_loss_list, all_best_loss_list, _ = \
         attack.perturb(args.testDataloader, motions_target_list, eps=args.eps, device=args.device)
 
@@ -687,10 +677,6 @@ def run_attacks_train(args):
 
     print("clean_loss_list")
     print(clean_loss_list)
-    # print("all_loss_list")
-    # print(all_loss_list)
-    # print("all_best_loss_list")
-    # print(all_best_loss_list)
     best_loss_list = all_best_loss_list[- 1]
     print("best_loss_list")
     print(best_loss_list)
@@ -706,24 +692,10 @@ def run_attacks_train(args):
                               args.save_imgs, args.save_flow, args.save_pose,
                               args.adv_img_dir, args.adv_pert_dir, args.flowdir, args.pose_dir,
                               device=args.device)
-    # traj_adv_rms_list, traj_adv_mean_partial_rms_list, \
-    # traj_adv_target_rms_list, traj_adv_target_mean_partial_rms_list = tuple(traj_adv_criterions_list)
 
     traj_adv_rms_list = traj_adv_criterions_list[0]
 
     # __________________________________ write the results to csv______________________________
-
-    # report_adv_deviation(dataset_idx_list, dataset_name_list, traj_name_list, traj_indices,
-    #                      traj_clean_target_mean_partial_rms_list, traj_adv_target_mean_partial_rms_list,
-    #                      args.save_csv, args.output_dir, crit_str="target_mean_partial_rms")
-    #
-    # report_adv_deviation(dataset_idx_list, dataset_name_list, traj_name_list, traj_indices,
-    #                      traj_clean_target_rms_list, traj_adv_target_rms_list,
-    #                      args.save_csv, args.output_dir, crit_str="target_rms")
-    #
-    # report_adv_deviation(dataset_idx_list, dataset_name_list, traj_name_list, traj_indices,
-    #                      traj_clean_mean_partial_rms_list, traj_adv_mean_partial_rms_list,
-    #                      args.save_csv, args.output_dir, crit_str="mean_partial_rms")
 
     report_adv_deviation(dataset_idx_list, dataset_name_list, traj_name_list, traj_indices,
                          traj_clean_rms_list, traj_adv_rms_list,
@@ -1073,10 +1045,7 @@ def test(args):
 
 def main():
     args = get_args()
-    # if args.attack is None:
-    #     return test_clean(args)
-    return run_attacks_out_of_sample_test(args)
-    # return run_attacks_train(args)
+    return run_attacks_train(args)
 
 
 if __name__ == '__main__':

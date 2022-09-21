@@ -193,7 +193,7 @@ class PGD(Attack):
                     eval_loss_tot, eval_loss_list = self.attack_eval(pert, data_shape, eval_data_loader, eval_y_list,
                                                                      device)
 
-                    test_loss_list = all_test_loss[-1][:]
+                    test_loss_list = all_test_loss[-1][:] if test_data_loader is not None else None
 
                     if eval_loss_tot > best_loss_sum:
                         iterations_without_improvement = 0
@@ -201,14 +201,18 @@ class PGD(Attack):
                         best_loss_list = eval_loss_list
                         best_loss_sum = eval_loss_tot
 
-                        test_loss_tot, test_loss_list = self.attack_eval(pert, data_shape, test_data_loader,
-                                                                         test_y_list,
-                                                                         device)
+                        if test_data_loader is not None:
+                            test_loss_tot, test_loss_list = self.attack_eval(pert, data_shape, test_data_loader,
+                                                                             test_y_list,
+                                                                             device)
                     else:
                         iterations_without_improvement += 1
 
                     all_loss.append(eval_loss_list)
-                    all_test_loss.append(test_loss_list)
+
+                    if test_data_loader is not None:
+                        all_test_loss.append(test_loss_list)
+
                     all_best_loss.append(best_loss_list)
                     traj_loss_mean_list = np.mean(eval_loss_list, axis=0)  # mean loss of all the trajectories per frame
                     traj_best_loss_mean_list = np.mean(best_loss_list, axis=0)
