@@ -19,7 +19,7 @@ def define_args():
 
     # attack args
     args.attack = 'pgd'  # the optimizer
-    args.alpha = 0.05
+    args.alpha = 0.1  # the learning rate
     args.attack_k = 100  # epochs num
     args.attack_t_crit = 'mean_partial_rms'  # train loss
     args.attack_rot_crit = 'quat_product'  # rotation criterion
@@ -29,39 +29,50 @@ def define_args():
     args.attack_rot_factor = 0  # rotation factor
     args.attack_flow_factor = 0  # flow factor
     args.attack_target_t_factor = 0  # the projection on the patch factor
-    args.early_stopping = 5
+    args.early_stopping = 10  # early stopping
 
     return args
 
 
 if __name__ == '__main__':
     # alpha test
-    for i in range(1, 6):
-        args = define_args()
-        args.alpha = 0.01 * i * 2
-        args.run_name = f'alpha{args.alpha}'
-
-        args = compute_run_args(args)
-        args = compute_data_args(args)
-        args = compute_VO_args(args)
-        args = compute_attack_args(args)
-        args = compute_output_dir(args)
-
-        test(args)
-
-    # # rms test
-    # args = define_args()
-    # args.attack_t_crit = "rms"
-    # args.run_name = f'rms'
+    # for i in range(6):
+    #     args = define_args()
+    #     args.alpha = 0.001 * 10**i
+    #     args.run_name = f'alpha{args.alpha}'
     #
-    # args = compute_run_args(args)
-    # args = compute_data_args(args)
-    # args = compute_VO_args(args)
-    # args = compute_attack_args(args)
-    # args = compute_output_dir(args)
+    #     args = compute_run_args(args)
+    #     args = compute_data_args(args)
+    #     args = compute_VO_args(args)
+    #     args = compute_attack_args(args)
+    #     args = compute_output_dir(args)
     #
-    # test(args)
-    #
+    #     test(args)
+
+    # rms test
+    args = define_args()
+    args.run_name = f'mean partial rms'
+
+    args = compute_run_args(args)
+    args = compute_data_args(args)
+    args = compute_VO_args(args)
+    args = compute_attack_args(args)
+    args = compute_output_dir(args)
+
+    test(args)
+
+    args = define_args()
+    args.attack_t_crit = "rms"
+    args.run_name = f'rms'
+
+    args = compute_run_args(args)
+    args = compute_data_args(args)
+    args = compute_VO_args(args)
+    args = compute_attack_args(args)
+    args = compute_output_dir(args)
+
+    test(args)
+
     # # rot test
     # for i in range(1, 6):
     #     args = define_args()

@@ -2,18 +2,21 @@ import os
 import torch
 import matplotlib.pyplot as plt
 
+
 def rms(loss_list):
     return [sum([sum(trajectory_losses) for trajectory_losses in epoch_losses]) for epoch_losses in loss_list]
 
+
 def vo(loss_list):
     return [sum([trajectory_losses[-1] for trajectory_losses in epoch_losses]) for epoch_losses in loss_list]
+
 
 def extract_label(filename):
     components = filename.split('_')
     return components[-1]
 
 
-def plot(y_label, x_label):
+def plot(title, y_label, x_label):
     loss_list_dir = "results/loss_lists"
 
     for filename in os.listdir(loss_list_dir):
@@ -25,6 +28,7 @@ def plot(y_label, x_label):
             label = extract_label(filename)
             label = '.'.join(label.split('.')[:-1])
             plt.plot(loss_per_epoch, label=label)
+    plt.title(title)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.legend(loc='lower right', fontsize=6)
@@ -34,7 +38,7 @@ def plot(y_label, x_label):
 
 
 if __name__ == '__main__':
-    plot('sum VO loss', 'epoch')
+    plot('alpha', 'sum rms loss', 'epoch')
 
 
 
